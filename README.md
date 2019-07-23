@@ -22,3 +22,12 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+bundle add graphql --version="~> 1.9"
+rails generate graphql:install
+
+docker-compose build
+docker-compose up
+docker-compose run web rake db:create
+docker-compose down
+docker-compose run web bundle install
