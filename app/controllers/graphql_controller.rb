@@ -8,7 +8,12 @@ class GraphqlController < ApplicationController
       # current_user: current_user,
     }
     # parses query, detects types to be used, resolves requested fields
-    result = MartianLibrarySchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+    result = MartianLibrarySchema.execute(
+      query,
+      variables: variables,
+      context: { current_user: current_user },
+      operation_name: operation_name
+    )
     render json: result
   rescue => e
     raise e unless Rails.env.development?
