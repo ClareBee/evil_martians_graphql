@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState} from 'react';
 import cs from './styles';
 
 const ProcessItemForm = ({
   initialTitle = "",
   initialDescription = "",
-  intitialImageUrl = "",
+  initialImageUrl = "",
   onProcessItem,
   buttonText,
   loading
