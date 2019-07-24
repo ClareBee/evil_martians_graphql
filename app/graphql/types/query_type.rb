@@ -9,7 +9,8 @@ module Types
           description: "Returns a list of items in the martian library" # optional description for doc
 
     def items
-      Item.all
+      #  eager loading to avoid n+1 (or use graphql-batch/ar_lazy_preload gems)
+      Item.preload(:user)
     end
   end
 end
