@@ -1,8 +1,26 @@
 import React from 'react';
-import cs from './styles';
+import { Mutation } from 'react-apollo';
+import { AddItemMutation } from './operations.graphql';
+import ProcessItemForm from '../ProcessItemForm';
 
 const AddItemForm = () => (
-  <div className={cs.addItemForm}>👋</div>
+  <Mutation mutation={AddItemMutation}>
+    {(addItem, {loading}) => (
+      <ProcessItemForm
+        buttonText="Add Item"
+        loading={loading}
+        onProcessItem={({ title, description, imageUrl }) =>
+          addItem({
+            variables: {
+              title,
+              description,
+              imageUrl
+            }
+          })
+        }
+      />
+    )}
+  </Mutation>
 );
 
 export default AddItemForm;

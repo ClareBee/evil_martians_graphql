@@ -54,7 +54,7 @@ requests handled by GraphqlController#execute action (parses query, detects type
 
 Types registered as fields on QueryType and defined via `rails g graphql:object name_of_type`
 
-Apollo for client-side 
+Apollo for client-side
 yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error apollo-link graphql graphql-tag react-apollo
 graphql-tag = build queries
 apollo-client = perform and cache graphQL requests
@@ -113,3 +113,5 @@ the input type definition (arguments);
 the return type definition;
 the #resolve method.
 Add a new entry to MutationType.
+--
+Wait for the mutation to be completed and update the cache manually. apollo-cache-inmemory provides writeQuery function for that. The Mutation component from the react-apollo library has a special property called update. It accepts cache as the first argument and the mutation result as the second. We want to manually add a new cache entry using a writeQuery method. It’s like saying “Hey, Apollo! Here is some data, pretend that you received it from the server.”
