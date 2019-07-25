@@ -18,14 +18,13 @@ const UpdateItemForm = ({
     <div className={cs.overlay}>
       <div className={cs.content}>
         <Mutation mutation={UpdateItemMutation} errorPolicy="none">
-          {(updateItem, { loading, data }) => (
+          {(updateItem, { loading }) => (
             <ProcessItemForm
               initialImageUrl={initialImageUrl}
               initialTitle={initialTitle}
               initialDescription={initialDescription}
               buttonText="Update Item"
               loading={loading}
-              data={data}
               errors={errors}
               onProcessItem={({ title, description, imageUrl }) => {
                 updateItem({
@@ -39,6 +38,7 @@ const UpdateItemForm = ({
                     __typename: 'Mutation',
                     updateItem: {
                       __typename: 'UpdateItemMutationPayload',
+                      id,
                       item: {
                         id,
                         __typename: 'Item',
