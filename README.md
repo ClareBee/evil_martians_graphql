@@ -157,6 +157,7 @@ fresh data? via polling/refetching - e.g. startPolling and stopPolling functions
 
 networkStatus + notifyNetworkStatusChange - info about status of query, useful re: refetch/polling
 The networkStatus property is an enum with number values from 1-8 representing a different loading state.
+manual queries? e.g. async/await callback on a button click
 
 Apollo Mutation component is what you'll use to trigger mutations from your UI. To create a Mutation component, just pass a GraphQL mutation string wrapped with the gql function to  this.props.mutation and provide a function to this.props.children that tells React what to render.
  The mutate function optionally takes  variables, optimisticResponse, refetchQueries, and update; however, you can also pass in those values as props to the Mutation component.
@@ -207,4 +208,5 @@ const AddTodo = () => {
 
 Not every mutation requires an update function. If you're updating a single item, you usually don't need an update function as long as you return the item's id and the property you updated. While this may seem like magic, this is actually a benefit of Apollo's normalized cache, which splits out each object with an id into its own entity in the cache.
 In the render prop function, we can destructure loading and error properties off the mutation result in order to track the state of our mutation in our UI. The Mutation component also has onCompleted and onError props in case you would like to provide callbacks instead. Additionally, the mutation result object also has a called boolean that tracks whether or not the mutate function has been called.
-manual queries? e.g. async/await callback on a button click
+
+When fetching an item list, the response was normalized and each item was added to the cache. apollo generates a key ${object__typename}:${objectId} for each entity that has __typename and id. When the mutation is completed, we get the object with the same __typename and id, apollo finds it in cache and makes changes (components are re-rendered too).

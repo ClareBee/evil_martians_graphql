@@ -27,14 +27,29 @@ const UpdateItemForm = () => ({
                   id,
                   title,
                   description,
-                  imageUrl}
-                });
-                onClose();
-              }}
-              />
+                  imageUrl
+                },
+                // https://www.apollographql.com/docs/react/api/react-apollo/#optionsoptimisticresponse
+                optimisticResponse: {
+                  __typename: 'Mutation',
+                  updateItem: {
+                    __typename: 'UpdateItemMutationPayload',
+                    item: {
+                      id,
+                      __typename: 'Item',
+                      title,
+                      description,
+                      imageUrl,
+                    },
+                  },
+                },
+              });
+              onClose();
+            }}
+          />
         )}
       </Mutation>
-      <button clasName={cs.close} onClick={onClose}>
+      <button className={cs.close} onClick={onClose}>
         close
       </button>
     </div>
