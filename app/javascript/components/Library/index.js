@@ -17,6 +17,7 @@ const Library = () => {
             <button
               key={id}
               className={cs.plate}
+              type="button"
               onClick={() => setItem({ title, imageUrl, id, description })}
               >
                 <div className={cs.title}>{title}</div>

@@ -48,7 +48,7 @@ const UpdateItemForm = ({
             />
           )}
         </Mutation>
-        <button className={cs.close} onClick={onClose}>
+        <button type="button" className={cs.close} onClick={onClose}>
           Close
       </button>
       </div>

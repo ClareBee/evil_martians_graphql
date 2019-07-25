@@ -39,6 +39,7 @@ const ProcessItemForm = ({
         "Loading..."
       ) : (
         <button
+          type="button"
           onClick={() => onProcessItem({ title, description, imageUrl })}
           className={cs.button}
           >
