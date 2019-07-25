@@ -3,10 +3,6 @@ class GraphqlController < ApplicationController
     variables = ensure_hash(params[:variables])
     query = params[:query]
     operation_name = params[:operationName] # optional
-    context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
-    }
     # parses query, detects types to be used, resolves requested fields
     result = MartianLibrarySchema.execute(
       query,
