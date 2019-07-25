@@ -8,11 +8,12 @@ const ProcessItemForm = ({
   onProcessItem,
   buttonText,
   loading,
-  errors
+  errors,
 }) => {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
+  console.log('error in form', errors)
   return (
     <div className={cs.form}>
       {errors && (

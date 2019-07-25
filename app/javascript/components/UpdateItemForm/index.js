@@ -10,17 +10,23 @@ const UpdateItemForm = ({
   initialDescription,
   initialImageUrl,
   onClose,
-}) => (
+  onErrors,
+  errors
+}) => {
+  console.log('errors in update form', errors)
+  return (
     <div className={cs.overlay}>
       <div className={cs.content}>
-        <Mutation mutation={UpdateItemMutation}>
-          {(updateItem, { loading }) => (
+        <Mutation mutation={UpdateItemMutation} errorPolicy="none">
+          {(updateItem, { loading, data }) => (
             <ProcessItemForm
               initialImageUrl={initialImageUrl}
               initialTitle={initialTitle}
               initialDescription={initialDescription}
               buttonText="Update Item"
               loading={loading}
+              data={data}
+              errors={errors}
               onProcessItem={({ title, description, imageUrl }) => {
                 updateItem({
                   variables: {
@@ -40,19 +46,23 @@ const UpdateItemForm = ({
                         description,
                         imageUrl,
                       },
+                      errors: null
                     },
                   },
+                }).then(({data}) => {
+                  console.log('errors in promise', data.updateItem.errors)
+                  onErrors(data.updateItem.errors);
                 });
                 onClose();
               }}
             />
-          )}
+        )}
         </Mutation>
         <button type="button" className={cs.close} onClick={onClose}>
           Close
       </button>
       </div>
     </div>
-  );
+)};
 
 export default UpdateItemForm;

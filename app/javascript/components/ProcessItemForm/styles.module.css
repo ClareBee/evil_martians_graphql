@@ -33,6 +33,7 @@
 
 .errors {
   position: absolute;
-  top: -20px;
+  top: 50px;
   color: #ff5845;
+  background: white;
 }
