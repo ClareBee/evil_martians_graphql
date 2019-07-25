@@ -8,6 +8,7 @@
   width: 100%;
   max-width: 840px;
   align-items: start;
+  position: relative;
 }
 
 .input {
@@ -28,4 +29,10 @@
 
 .input:focus {
   border-bottom: 1px solid #bf6c35;
+}
+
+.errors {
+  position: absolute;
+  top: -20px;
+  color: #ff5845;
 }

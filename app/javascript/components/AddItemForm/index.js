@@ -11,6 +11,7 @@ const AddItemForm = () => (
       <ProcessItemForm
         buttonText="Add Item"
         loading={loading}
+        errors={data && data.addItem.errors}
         onProcessItem={({ title, description, imageUrl }) =>
           addItem({
             variables: {
