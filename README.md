@@ -115,3 +115,96 @@ the #resolve method.
 Add a new entry to MutationType.
 --
 Wait for the mutation to be completed and update the cache manually. apollo-cache-inmemory provides writeQuery function for that. The Mutation component from the react-apollo library has a special property called update. It accepts cache as the first argument and the mutation result as the second. We want to manually add a new cache entry using a writeQuery method. It’s like saying “Hey, Apollo! Here is some data, pretend that you received it from the server.”
+
+Apollo Query component provides loading, error and data properties:
+
+```javascript
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
+
+const GET_DOGS = gql`
+  {
+    dogs {
+      id
+      breed
+    }
+  }
+`;
+
+const Dogs = ({ onDogSelected }) => (
+  <Query query={GET_DOGS}>
+    {({ loading, error, data }) => {
+      if (loading) return "Loading...";
+      if (error) return `Error! ${error.message}`;
+
+      return (
+        <select name="dog" onChange={onDogSelected}>
+          {data.dogs.map(dog => (
+            <option key={dog.id} value={dog.breed}>
+              {dog.breed}
+            </option>
+          ))}
+        </select>
+      );
+    }}
+  </Query>
+);
+```
+Apollo Query component requries query/children
+query first tries to load from Apollo cache and if not there, sends request to 'server'
+query subscribes to the result = updates reactively
+fresh data? via polling/refetching - e.g. startPolling and stopPolling functions on the result object passed to render prop function or refeteech function (e.g. triggered by a button click - no need to pass in vars, uses the ones from the previous query
+
+networkStatus + notifyNetworkStatusChange - info about status of query, useful re: refetch/polling
+The networkStatus property is an enum with number values from 1-8 representing a different loading state.
+
+Apollo Mutation component is what you'll use to trigger mutations from your UI. To create a Mutation component, just pass a GraphQL mutation string wrapped with the gql function to  this.props.mutation and provide a function to this.props.children that tells React what to render.
+ The mutate function optionally takes  variables, optimisticResponse, refetchQueries, and update; however, you can also pass in those values as props to the Mutation component.
+ The second argument to the render prop function is an object with your mutation result on the data property, as well as booleans for loading and if the mutate function was called, in addition to  error. If you'd like to ignore the result of the mutation, pass ignoreResults as a prop to the mutation component.
+The update function is called with the Apollo cache as the first argument. The cache has several utility functions such as cache.readQuery and cache.writeQuery that allow you to read and write queries to the cache with GraphQL as if it were a server.
+The second argument to the update function is an object with a data property containing your mutation result. If you specify an optimistic response, your update function will be called twice: once with your optimistic result, and another time with your actual result. You can use your mutation result to update the cache with cache.writeQuery.
+const GET_TODOS = gql`
+  query GetTodos {
+    todos
+  }
+`;
+
+const AddTodo = () => {
+  let input;
+
+  return (
+    <Mutation
+      mutation={ADD_TODO}
+      update={(cache, { data: { addTodo } }) => {
+        const { todos } = cache.readQuery({ query: GET_TODOS });
+        cache.writeQuery({
+          query: GET_TODOS,
+          data: { todos: todos.concat([addTodo]) },
+        });
+      }}
+    >
+      {addTodo => (
+        <div>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              addTodo({ variables: { type: input.value } });
+              input.value = "";
+            }}
+          >
+            <input
+              ref={node => {
+                input = node;
+              }}
+            />
+            <button type="submit">Add Todo</button>
+          </form>
+        </div>
+      )}
+    </Mutation>
+  );
+};
+
+Not every mutation requires an update function. If you're updating a single item, you usually don't need an update function as long as you return the item's id and the property you updated. While this may seem like magic, this is actually a benefit of Apollo's normalized cache, which splits out each object with an id into its own entity in the cache.
+In the render prop function, we can destructure loading and error properties off the mutation result in order to track the state of our mutation in our UI. The Mutation component also has onCompleted and onError props in case you would like to provide callbacks instead. Additionally, the mutation result object also has a called boolean that tracks whether or not the mutate function has been called.
+manual queries? e.g. async/await callback on a button click
