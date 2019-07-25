@@ -6,7 +6,7 @@ module Mutations
     argument :image_url, String, required: false
 
     field :item, Types::ItemType, null: true
-    field :errors, Types::ValidationErrorsType, null: false
+    field :errors, [String], null: false
 
     def resolve(id:, title:, description: nil, image_url: nil)
       check_authentication!

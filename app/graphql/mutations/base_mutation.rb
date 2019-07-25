@@ -5,5 +5,6 @@ module Mutations
 
       raise GraphQL::ExecutionError,
         "You need to authenticate to perform this action"
+    end
   end
 end

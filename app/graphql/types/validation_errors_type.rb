@@ -1,5 +1,5 @@
 module Types
-  class ValidationErrorsType <Types::BaseObject
+  class ValidationErrorsType < Types::BaseObject
     field :details, String, null: false
     field :full_messages, [String], null: false
 
