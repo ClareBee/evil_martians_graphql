@@ -13,6 +13,7 @@ module Mutations
       )
 
       if item.save
+        MartianLibrarySchema.subscriptions.trigger("itemAdded", {}, item) # field name, options, root object of subscription update
         { item: item }
       else
         { errors: item.errors }

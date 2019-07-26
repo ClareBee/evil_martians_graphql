@@ -912,6 +912,10 @@ acorn@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.2.0.tgz#67f0da2fc339d6cfb5d6fb244fd449f33cd8bbe3"
 
+actioncable@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/actioncable/-/actioncable-5.2.3.tgz#639d98855b854b7bfe2059ab97d6e0ae8fd60a1d"
+
 ajv-errors@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.1.tgz#f35986aceb91afadec4102fbd85014950cefa64d"
@@ -2927,6 +2931,15 @@ globule@^1.0.0:
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.0.tgz#8d8fdc73977cb04104721cb53666c1ca64cd328b"
+
+graphql-ruby-client@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/graphql-ruby-client/-/graphql-ruby-client-1.6.5.tgz#1f3ebea8717fb589593cab711a2b40711f797827"
+  dependencies:
+    apollo-link "^1.2.12"
+    glob "^7.1.4"
+    graphql "^14.3.1"
+    minimist "^1.2.0"
 
 graphql-tag@^2.10.1:
   version "2.10.1"
