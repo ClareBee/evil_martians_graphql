@@ -9,7 +9,7 @@ module ApplicationCable
     private
     def current_user
       token = request.params[:token].to_s
-      email = base64.decode64(token)
+      email = Base64.decode64(token)
       User.find_by(email: email)
     end
   end
