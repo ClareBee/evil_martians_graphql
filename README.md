@@ -1,37 +1,24 @@
-# README
+README
+------
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+**Based on a three-part tutorial by Evil Martians**
+- https://evilmartians.com/chronicles/graphql-on-rails-1-from-zero-to-the-first-query
+- https://evilmartians.com/chronicles/graphql-on-rails-2-updating-the-data
+- https://evilmartians.com/chronicles/graphql-on-rails-3-on-the-way-to-perfection
 
-Things you may want to cover:
+**Using Rails 6.0.0.rc1 (incl ActionCable), GraphQL, Apollo, React 16.3+**
+___
+## GraphQL
 
-* Ruby version
+Why?
+Schema = mutation, query, (subscription)
+Mutation = typed fields, resolve method?
+Types
 
-* System dependencies
+Fragments
+GraphQL's 'variables' -> a named set of fields on a specific type.
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-bundle add graphql --version="~> 1.9"
-rails generate graphql:install
-
-docker-compose build
-docker-compose up
-docker-compose run web rake db:create
-docker-compose down
-docker-compose run web bundle install
-
+## ActionCable
 Notes for self:
 ` bundle add graphql --version="~> 1.9"`
 `rails g graphql:install`
@@ -39,7 +26,7 @@ GraphQL - avoid overfetching, strongly typed schemas, schema introspection
 a query represents a sub-graph of the schema
  a GraphQL server must guarantee that mutations are executed consecutively, while queries can be executed in parallel.
 All variables begin with $
-Selection set = {} 
+Selection set = {}
  ---
  requires QueryType in Types Module, inheriting from Types::BaseObject  `query_type.rb` (mutation and subscription types are optional)
  GraphiQL web interface provided by mounting: (available at http://localhost:3000/graphiql)
@@ -54,15 +41,59 @@ requests handled by GraphqlController#execute action (parses query, detects type
 
 Types registered as fields on QueryType and defined via `rails g graphql:object name_of_type`
 
-Apollo for client-side
-yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error apollo-link graphql graphql-tag react-apollo
-graphql-tag = build queries
-apollo-client = perform and cache graphQL requests
-apollo-cache-inmemory = storage implementation for Apollo cache
-react-apollo = displaying data
-apollo-link = middleware pattern for apollo-client operations
-Apollo config in utils/apollo.js
-ApolloProvider HOC to wrap children
+## Apollo
+https://www.apollographql.com
+ - declarative approach to data-fetching
+ - single Query component encapsulates all logic for retrieving data, tracking loading & error states, and updating UI
+ - no middleware/boilerplate, no need to transform/cache response
+ - normalised cache
+ > Since you can have multiple paths leading to the same data, normalisation is essential for keeping your data consistent across multiple components
+ _https://www.apollographql.com_
+ - handles not only remote data, but also local data (e.g. global flags, device API results) -> apollo-link-state for local state-management -> Apollo cache as single source of truth for app's data -> makes GraphQL into unified interface to ALL data (and queryable through GraphiQL)
+
+`yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error apollo-link graphql graphql-tag react-apollo`
+
+`apollo-client` = perform and cache graphQL requests
+`apollo-cache-inmemory` = storage implementation for Apollo cache (for Apollo Client 2.0) -> `InMemoryCache` as normalised data store (splits data into individual objects w unique identifiers - `id` or `_id` & `__typename`, stored in flattened data structure)
+Initialise cache & pass to ApolloClient
+```javascript
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { HttpLink } from 'apollo-link-http';
+import { ApolloClient } from 'apollo-client';
+
+const cache = new InMemoryCache();
+
+const client = new ApolloClient({
+  link: new HttpLink(),
+  cache
+});
+```
+`apollo-link` = middleware pattern for apollo-client operations
+> Apollo Link is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results. In a few words, Apollo Links are chainable "units" that you can snap together to define how each GraphQL request is handled by your GraphQL client. When you fire a GraphQL request, each Link's functionality is applied one after another. This allows you to control the request lifecycle in a way that makes sense for your application. For example, Links can provide retrying, polling, batching, and more!
+https://www.apollographql.com/docs/link/
+https://www.apollographql.com/docs/link/overview/
+`apollo-link-http` - the most common Apollo link - a terminating link that fetches GraphQL results from a GraphQL endpoint over a http connection (supports auth, persisted queries, dynamic uris etc)
+`apollo-link-error` - callback with `onError` (opts: operation, response, GraphQLErrors, networkError, forward - to next link in chain) https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error
+`graphql-tag` = build queries - helpful utilities for parsing GraphQL queries (incl `gqp` - a JavaScript template literal tag that parses GraphQL query strings into the standard GraphlQL AST & `/loader` - a webpack loader to preprocess queries) https://github.com/apollographql/graphql-tag
+
+`react-apollo` = displaying data (view layer integration for React)
+```javascript
+import React from "react";
+import { render } from "react-dom";
+// HOC to wrap children
+import { ApolloProvider } from "react-apollo";
+
+const App = () => (
+  <ApolloProvider client={client}>
+    <div>
+      <h2>My first Apollo app 🚀</h2>
+    </div>
+  </ApolloProvider>
+);
+
+render(<App />, document.getElementById("root"));
+```
+Apollo config in utils/apollo.js or apollo.config.js
 
 RSpec
 bundle add rspec-rails --version="4.0.0.beta2" --group="development,test"
@@ -211,4 +242,3 @@ In the render prop function, we can destructure loading and error properties off
 
 When fetching an item list, the response was normalized and each item was added to the cache. apollo generates a key ${object__typename}:${objectId} for each entity that has __typename and id. When the mutation is completed, we get the object with the same __typename and id, apollo finds it in cache and makes changes (components are re-rendered too).
 ---
-GraphQL has its own “variables” called fragments. A fragment is a named set of fields on a specific type.
