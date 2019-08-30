@@ -32,7 +32,7 @@ const Library = () => {
                   <div className={cs.user}> added by {user.email}</div>
                 ) : null }
               </button>
-              <DeleteItemForm id={id} />)
+              <DeleteItemForm id={id} key={id.concat(id)}/>)
               </div>
               ))}
           {item !== null && (
