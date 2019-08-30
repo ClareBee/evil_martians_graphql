@@ -10,8 +10,8 @@ html {
 
 .button {
   border: none;
-  background: #9fa628;
-  color: #fff;
+  background: #23CE6B;
+  color: #F6F8FF;
   padding: 10px;
   font-size: 15px;
 }
@@ -20,9 +20,9 @@ html {
   width: 100%;
   height: 40px;
   display: flex;
-  background: #9fa628;
+  background: #A846A0;
   font-size: 15px;
-  color: #fff;
+  color: #F6F8FF;
   padding: 10px 20px;
   align-items: center;
 }

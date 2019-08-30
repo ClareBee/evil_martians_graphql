@@ -18,23 +18,22 @@ const Library = () => {
           {loading || !data.items
           ? "loading..."
           : data.items.map(({ title, id, user, imageUrl, description }) => (
-            <div>
-            <button
-              key={id}
-              className={cs.plate}
-              type="button"
-              onClick={() => setItem({ title, imageUrl, id, description })}
-              >
-                <div className={cs.title}>{title}</div>
-                <div>{description}</div>
-                {imageUrl && <img src={imageUrl} className={cs.image} />}
-                { user ? (
-                  <div className={cs.user}> added by {user.email}</div>
-                ) : null }
+            <div key={id}>
+              <button
+                className={cs.plate}
+                type="button"
+                onClick={() => setItem({ title, imageUrl, id, description })}
+                >
+                  <div className={cs.title}>{title}</div>
+                  <div className={cs.description}>{description}</div>
+                  {imageUrl && <img src={imageUrl} className={cs.image} />}
+                  { user ? (
+                    <div className={cs.user}> added by {user.email}</div>
+                  ) : null }
               </button>
-              <DeleteItemForm id={id} key={id.concat(id)}/>)
-              </div>
-              ))}
+              <DeleteItemForm id={id} key={id.concat(id)}/>
+            </div>
+            ))}
           {item !== null && (
               <UpdateItemForm
                 id={item.id}

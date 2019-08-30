@@ -12,13 +12,13 @@
   width: calc(100vw - 10px);
   margin: 20px auto;
   padding: 40px;
-  background: #fff;
+  background: #F6F8FF;
 }
 
 .close {
   border: none;
-  background: #9fa628;
-  color: #fff;
+  background: #A846A0;
+  color: #F6F8FF;
   padding: 10px;
   font-size: 15px;
   width: 100%;

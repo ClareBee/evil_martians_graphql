@@ -1,0 +1,13 @@
+.delete {
+  display: block;
+  width: 100%;
+  min-height: 55px;
+  transition: all 1s;
+  font-size: 1.25rem;
+  background-color: #23CE6B;
+  color: #F6F8FF;
+}
+
+.delete:hover {
+  background-color: #272D2D;
+}

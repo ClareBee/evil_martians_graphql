@@ -2,12 +2,11 @@ import React from 'react';
 import { Mutation } from 'react-apollo';
 import { DeleteItemMutation } from './operations.graphql';
 import { LibraryQuery } from '../Library/operations.graphql';
+import cs from './styles';
+
 
 const DeleteItemForm = ({id}) => {
-  console.log('id', id)
-  console.log('mutation', DeleteItemMutation)
   const destroy = (id, deleteItem) => {
-    console.log('hello')
     deleteItem({
       variables: {
         id: id
@@ -31,13 +30,15 @@ const DeleteItemForm = ({id}) => {
   }
   return (
   <Mutation mutation={DeleteItemMutation}>
-    {(deleteItem, { loading, data }) => (
+    {(deleteItem) =>
       <button
+        className={cs.delete}
         onClick={() => {
-          console.log(data)
           destroy(id, deleteItem)
-        }}>Delete</button>
-    )}
+        }}>
+          Delete
+      </button>
+    }
   </Mutation>
   )
 }
