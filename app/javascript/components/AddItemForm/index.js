@@ -22,6 +22,7 @@ const AddItemForm = () => (
             // second arg to addItem method for apollo to update cache
             update: (cache, { data: { addItem } } ) => {
               const item = addItem.item;
+      
               if (item) {
                 const currentItems = cache.readQuery({ query: LibraryQuery });
                 cache.writeQuery({

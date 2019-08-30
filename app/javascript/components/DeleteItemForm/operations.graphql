@@ -1,0 +1,16 @@
+#import '../../fragments/Item.graphql'
+
+mutation DeleteItemMutation(
+  $id: ID!
+) {
+  deleteItem(
+    id: $id
+  ) {
+    item {
+      ...ItemFragment
+    }
+    errors {
+      fullMessages
+    }
+  }
+}

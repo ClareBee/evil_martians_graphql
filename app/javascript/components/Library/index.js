@@ -1,8 +1,10 @@
 import React, { useState} from 'react';
-import { Query } from "react-apollo";
-import { LibraryQuery } from './operations.graphql';
+import { Query, Mutation } from "react-apollo";
+import { LibraryQuery, DeleteItemMutation } from './operations.graphql';
+
 import cs from './styles';
 import UpdateItemForm from '../UpdateItemForm';
+import DeleteItemForm from '../DeleteItemForm';
 import Subscription from '../Subscription';
 
 const Library = () => {
@@ -10,11 +12,13 @@ const Library = () => {
   const [errors, setErrors] = useState({});
   return(
     <Query query={LibraryQuery}>
+      {/* Query component from react-apollo provides subscribeToMore */}
       {({ data, loading, subscribeToMore }) => (
         <div className={cs.library}>
           {loading || !data.items
           ? "loading..."
           : data.items.map(({ title, id, user, imageUrl, description }) => (
+            <div>
             <button
               key={id}
               className={cs.plate}
@@ -28,6 +32,8 @@ const Library = () => {
                   <div className={cs.user}> added by {user.email}</div>
                 ) : null }
               </button>
+              <DeleteItemForm id={id} />)
+              </div>
               ))}
           {item !== null && (
               <UpdateItemForm

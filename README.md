@@ -19,6 +19,11 @@ Fragments
 GraphQL's 'variables' -> a named set of fields on a specific type.
 
 ## ActionCable
+
+GraphQL Subscription is a mechanism for delivering server-initiated updates to the client. Each update returns the data of a specific type: for instance, we could add a subscription to notify the client when a new item is added. When we send Subscription operation to the server, it gives us an Event Stream back. You can use anything, including post pigeons, to transport events, but Websockets are especially suitable for that. For our Rails application, it means we can use ActionCable for transport.
+The Query component from the react-apollo library provides the special function subscribeToMore
+---
+
 Notes for self:
 ` bundle add graphql --version="~> 1.9"`
 `rails g graphql:install`
@@ -27,7 +32,7 @@ a query represents a sub-graph of the schema
  a GraphQL server must guarantee that mutations are executed consecutively, while queries can be executed in parallel.
 All variables begin with $
 Selection set = {}
- ---
+
  requires QueryType in Types Module, inheriting from Types::BaseObject  `query_type.rb` (mutation and subscription types are optional)
  GraphiQL web interface provided by mounting: (available at http://localhost:3000/graphiql)
  ```ruby
@@ -52,7 +57,7 @@ https://www.apollographql.com
  - handles not only remote data, but also local data (e.g. global flags, device API results) -> apollo-link-state for local state-management -> Apollo cache as single source of truth for app's data -> makes GraphQL into unified interface to ALL data (and queryable through GraphiQL)
 
 `yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error apollo-link graphql graphql-tag react-apollo`
-
+(or `yarn add apollo-boost react-apollo graphql` = `apollo-boost` contains the apollo basics!)
 `apollo-client` = perform and cache graphQL requests
 `apollo-cache-inmemory` = storage implementation for Apollo cache (for Apollo Client 2.0) -> `InMemoryCache` as normalised data store (splits data into individual objects w unique identifiers - `id` or `_id` & `__typename`, stored in flattened data structure)
 Initialise cache & pass to ApolloClient
@@ -68,8 +73,10 @@ const client = new ApolloClient({
   cache
 });
 ```
+
 `apollo-link` = middleware pattern for apollo-client operations
 > Apollo Link is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results. In a few words, Apollo Links are chainable "units" that you can snap together to define how each GraphQL request is handled by your GraphQL client. When you fire a GraphQL request, each Link's functionality is applied one after another. This allows you to control the request lifecycle in a way that makes sense for your application. For example, Links can provide retrying, polling, batching, and more!
+
 https://www.apollographql.com/docs/link/
 https://www.apollographql.com/docs/link/overview/
 `apollo-link-http` - the most common Apollo link - a terminating link that fetches GraphQL results from a GraphQL endpoint over a http connection (supports auth, persisted queries, dynamic uris etc)
@@ -93,9 +100,17 @@ const App = () => (
 
 render(<App />, document.getElementById("root"));
 ```
+
+React Component Folders:
+- javascript/components/Name/
+-- index.js
+-- operations.graphql
+-- styles.module.css
+
 Apollo config in utils/apollo.js or apollo.config.js
 
 RSpec
+```ruby
 bundle add rspec-rails --version="4.0.0.beta2" --group="development,test"
 rails generate rspec:install
 bundle add factory_bot_rails --version="~> 5.0" --group="development,test"
@@ -138,14 +153,15 @@ RSpec.describe Types::QueryType do
     end
   end
 end
+```
 
 Add a class implementing the mutation logic, which includes:
-the input type definition (arguments);
-the return type definition;
-the #resolve method.
+- the input type definition (arguments);
+- the return type definition;
+- the #resolve method.
 Add a new entry to MutationType.
 --
-Wait for the mutation to be completed and update the cache manually. apollo-cache-inmemory provides writeQuery function for that. The Mutation component from the react-apollo library has a special property called update. It accepts cache as the first argument and the mutation result as the second. We want to manually add a new cache entry using a writeQuery method. It’s like saying “Hey, Apollo! Here is some data, pretend that you received it from the server.”
+Wait for the mutation to be completed and update the cache manually => `apollo-cache-inmemory`'s `writeQuery`. The Mutation component from the react-apollo library has a special property called update. It accepts cache as the first argument and the mutation result as the second. We want to manually add a new cache entry using a writeQuery method. It’s like saying “Hey, Apollo! Here is some data, pretend that you received it from the server.”
 
 Apollo Query component provides loading, error and data properties:
 
@@ -195,6 +211,7 @@ Apollo Mutation component is what you'll use to trigger mutations from your UI. 
  The second argument to the render prop function is an object with your mutation result on the data property, as well as booleans for loading and if the mutate function was called, in addition to  error. If you'd like to ignore the result of the mutation, pass ignoreResults as a prop to the mutation component.
 The update function is called with the Apollo cache as the first argument. The cache has several utility functions such as cache.readQuery and cache.writeQuery that allow you to read and write queries to the cache with GraphQL as if it were a server.
 The second argument to the update function is an object with a data property containing your mutation result. If you specify an optimistic response, your update function will be called twice: once with your optimistic result, and another time with your actual result. You can use your mutation result to update the cache with cache.writeQuery.
+```javascript
 const GET_TODOS = gql`
   query GetTodos {
     todos
@@ -236,7 +253,7 @@ const AddTodo = () => {
     </Mutation>
   );
 };
-
+```
 Not every mutation requires an update function. If you're updating a single item, you usually don't need an update function as long as you return the item's id and the property you updated. While this may seem like magic, this is actually a benefit of Apollo's normalized cache, which splits out each object with an id into its own entity in the cache.
 In the render prop function, we can destructure loading and error properties off the mutation result in order to track the state of our mutation in our UI. The Mutation component also has onCompleted and onError props in case you would like to provide callbacks instead. Additionally, the mutation result object also has a called boolean that tracks whether or not the mutate function has been called.
 
