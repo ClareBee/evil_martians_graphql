@@ -16,19 +16,9 @@ ___
 - strongly-typed schemas
 - schema introspection
 
-Why?
-Schema = mutation, query, (subscription)
-Mutation = typed fields, resolve method?
-Types
-
 Fragments
 GraphQL's 'variables' -> a named set of fields on a specific type.
 
-## ActionCable
-
-GraphQL Subscription is a mechanism for delivering server-initiated updates to the client. Each update returns the data of a specific type: for instance, we could add a subscription to notify the client when a new item is added.
-The Query component from the `react-apollo` library provides the special function `subscribeToMore`:
-Read More: https://www.apollographql.com/docs/react/advanced/subscriptions/
 ---
 
 Notes for self:
@@ -41,6 +31,11 @@ All variables begin with $
 Selection set = {}
 
  requires QueryType in Types Module, inheriting from Types::BaseObject  `query_type.rb` (mutation and subscription types are optional)
+ Requests handled by GraphqlController#execute action (parses query, detects types, resolves requested fields)
+
+Types registered as fields on QueryType and defined via `rails g graphql:object name_of_type`
+
+---
 
  GraphiQL web interface provided by mounting: (available at http://localhost:3000/graphiql)
  ```ruby
@@ -50,9 +45,9 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
 end
 ```
-Requests handled by GraphqlController#execute action (parses query, detects types, resolves requested fields)
+![GraphiQL](GraphiQL.PNG)
 
-Types registered as fields on QueryType and defined via `rails g graphql:object name_of_type`
+---
 
 ## Apollo
 
@@ -66,6 +61,7 @@ Read more: https://www.apollographql.com
 
 Apollo config in `utils/apollo.js` or `apollo.config.js`
 
+### Installation:
 `yarn add apollo-client apollo-cache-inmemory apollo-link-http apollo-link-error apollo-link graphql graphql-tag react-apollo`
 (or `yarn add apollo-boost react-apollo graphql` = `apollo-boost` contains the apollo basics!)
 
@@ -79,7 +75,7 @@ Apollo config in `utils/apollo.js` or `apollo.config.js`
 - `graphql-tag` = build queries - helpful utilities for parsing GraphQL queries (incl `gqp` - a JavaScript template literal tag that parses GraphQL query strings into the standard GraphlQL AST & `/loader` - a webpack loader to preprocess queries) https://github.com/apollographql/graphql-tag
 - `react-apollo` = displaying data (view layer integration for React)
 
-Initialise cache & pass to ApolloClient:
+#### Initialise cache & pass to ApolloClient:
 
 ```javascript
 // utils/apollo.js
@@ -94,12 +90,12 @@ const client = new ApolloClient({
   cache
 });
 ```
+### Wrap App in Provider HOC
 
 ```javascript
 // app/javascript/packs/index.js
 import React from "react";
 import { render } from "react-dom";
-// HOC to wrap children
 import { ApolloProvider } from "react-apollo";
 
 const App = () => (
@@ -221,6 +217,12 @@ In the render prop function, we can destructure loading and error properties off
 
 When fetching an item list, the response was normalized and each item was added to the cache. apollo generates a key ${object__typename}:${objectId} for each entity that has __typename and id. When the mutation is completed, we get the object with the same __typename and id, apollo finds it in cache and makes changes (components are re-rendered too).
 ---
+
+## ActionCable
+
+GraphQL Subscription is a mechanism for delivering server-initiated updates to the client. Each update returns the data of a specific type: for instance, we could add a subscription to notify the client when a new item is added.
+The Query component from the `react-apollo` library provides the special function `subscribeToMore`:
+Read More: https://www.apollographql.com/docs/react/advanced/subscriptions/
 
 ### React Component Folders:
 - javascript/components/Name/
