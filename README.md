@@ -21,23 +21,21 @@ GraphQL's 'variables' -> a named set of fields on a specific type.
 
 ---
 
-Notes for self:
+### Notes for self:
 ` bundle add graphql --version="~> 1.9"`
 `rails g graphql:install`
 
-a query represents a sub-graph of the schema
-a GraphQL server must guarantee that mutations are executed consecutively, while queries can be executed in parallel.
-All variables begin with $
+- A query represents a sub-graph of the schema
+- GraphQL server must guarantee that mutations are executed consecutively, while queries can be executed in parallel.
+- All variables begin with $
 Selection set = {}
-
- requires QueryType in Types Module, inheriting from Types::BaseObject  `query_type.rb` (mutation and subscription types are optional)
- Requests handled by GraphqlController#execute action (parses query, detects types, resolves requested fields)
-
-Types registered as fields on QueryType and defined via `rails g graphql:object name_of_type`
+- Requires QueryType in Types Module, inheriting from Types::BaseObject  `query_type.rb` (mutation & subscription types are optional)
+- Requests handled by `GraphqlController#execute` action (parses query, detects types, resolves requested fields)
+- Types registered as fields on QueryType & defined via `rails g graphql:object name_of_type`
 
 ---
 
- GraphiQL web interface provided by mounting: (available at http://localhost:3000/graphiql)
+ **GraphiQL** web interface provided by mounting: (available at http://localhost:3000/graphiql)
  ```ruby
  # config/routes.rb
 Rails.application.routes.draw do
@@ -66,7 +64,7 @@ Apollo config in `utils/apollo.js` or `apollo.config.js`
 (or `yarn add apollo-boost react-apollo graphql` = `apollo-boost` contains the apollo basics!)
 
 ### Packages:
-- `apollo-client` = perform and cache graphQL requests
+- `apollo-client` = perform & cache graphQL requests
 - `apollo-cache-inmemory` = storage implementation for Apollo cache (for Apollo Client 2.0) -> `InMemoryCache` as normalised data store (splits data into individual objects w unique identifiers - `id` or `_id` & `__typename`, stored in flattened data structure)
 - `apollo-link` = middleware pattern for apollo-client operations
 > Apollo Link is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results. In a few words, Apollo Links are chainable "units" that you can snap together to define how each GraphQL request is handled by your GraphQL client. When you fire a GraphQL request, each Link's functionality is applied one after another. This allows you to control the request lifecycle in a way that makes sense for your application. For example, Links can provide retrying, polling, batching, and more! - From https://www.apollographql.com/docs/link/
@@ -90,6 +88,7 @@ const client = new ApolloClient({
   cache
 });
 ```
+
 ### Wrap App in Provider HOC
 
 ```javascript
@@ -113,11 +112,11 @@ render(<App />, document.getElementById("root"));
 ```javascript
 <Query></Query>
 ```
-query first tries to load from Apollo cache and if not there, sends request to 'server'
-query subscribes to the result = updates reactively
-fresh data? via polling/refetching - e.g. startPolling and stopPolling functions on the result object passed to render prop function or refeteech function (e.g. triggered by a button click - no need to pass in vars, uses the ones from the previous query
+- Query first tries to load from Apollo cache and if not there, sends request to 'server'
+- Query subscribes to the result = updates reactively
+ -Fresh data? via polling/refetching - e.g. `startPolling` and `stopPolling` functions on the result object passed to render prop function or refetch function (e.g. triggered by a button click - no need to pass in vars, uses the ones from the previous query
 
-networkStatus + notifyNetworkStatusChange - info about status of query, useful re: refetch/polling
+`networkStatus` + `notifyNetworkStatusChange` - info about status of query, useful re: refetch/polling
 The networkStatus property is an enum with number values from 1-8 representing a different loading state.
 manual queries? e.g. async/await callback on a button click
 
@@ -158,29 +157,18 @@ const Dogs = ({ onDogSelected }) => (
 ---
 
 ### Apollo Mutation component
-```javascript
-<Mutation></Mutation>
-```
-Apollo Mutation component triggers mutations from UI. To create a Mutation component, just pass a GraphQL mutation string wrapped with the gql function to  this.props.mutation and provide a function to this.props.children that tells React what to render.
- The mutate function optionally takes  variables, optimisticResponse, refetchQueries, and update; however, you can also pass in those values as props to the Mutation component.
- The second argument to the render prop function is an object with your mutation result on the data property, as well as booleans for loading and if the mutate function was called, in addition to  error. If you'd like to ignore the result of the mutation, pass ignoreResults as a prop to the mutation component.
-The update function is called with the Apollo cache as the first argument. The cache has several utility functions such as cache.readQuery and cache.writeQuery that allow you to read and write queries to the cache with GraphQL as if it were a server.
-The second argument to the update function is an object with a data property containing your mutation result. If you specify an optimistic response, your update function will be called twice: once with your optimistic result, and another time with your actual result. You can use your mutation result to update the cache with cache.writeQuery.
-Wait for the mutation to be completed and update the cache manually => `apollo-cache-inmemory`'s `writeQuery`. The Mutation component from the react-apollo library has a special property called update. It accepts cache as the first argument and the mutation result as the second. We want to manually add a new cache entry using a writeQuery method. It’s like saying “Hey, Apollo! Here is some data, pretend that you received it from the server.”
+See [Apollo Docs](https://deploy-preview-4650--apollo-client-docs.netlify.com/docs/react/essentials/mutations) for 
+- Triggers mutations from UI. 
+- Opt params = `variables`, `optimisticResponse`, `refetchQueries`, & `update` (OR can be passed into the Mutation component as props)
 
-Example:
-```javascript
+```
 const GET_TODOS = gql`
   query GetTodos {
     todos
   }
 `;
 
-const AddTodo = () => {
-  let input;
-
-  return (
-    <Mutation
+ <Mutation
       mutation={ADD_TODO}
       update={(cache, { data: { addTodo } }) => {
         const { todos } = cache.readQuery({ query: GET_TODOS });
@@ -190,39 +178,69 @@ const AddTodo = () => {
         });
       }}
     >
-      {addTodo => (
-        <div>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              addTodo({ variables: { type: input.value } });
-              input.value = "";
-            }}
-          >
-            <input
-              ref={node => {
-                input = node;
-              }}
-            />
-            <button type="submit">Add Todo</button>
-          </form>
-        </div>
-      )}
-    </Mutation>
-  );
-};
+    [...]
+  ```
+
+**Update function**:
+- Apollo cache as 1st argument, mutation result as second (on data property)
+- Pass `ignoreResults` as a prop to disregard result.
+- `cache.readQuery` & `cache.writeQuery` allow you to read & write queries to the cache w GraphQL as if it were a server.
+- `optimisticResponse` = update function will be called twice: once with optimistic result, & again with actual result.
+- track state of mutation in UI w `loading`/`error`/`called` booleans.
+
+Example: (from Apollo docs)
 ```
-Not every mutation requires an update function. If you're updating a single item, you usually don't need an update function as long as you return the item's id and the property you updated. While this may seem like magic, this is actually a benefit of Apollo's normalized cache, which splits out each object with an id into its own entity in the cache.
-In the render prop function, we can destructure loading and error properties off the mutation result in order to track the state of our mutation in our UI. The Mutation component also has onCompleted and onError props in case you would like to provide callbacks instead. Additionally, the mutation result object also has a called boolean that tracks whether or not the mutate function has been called.
+const Todos = () => (
+  <Query query={GET_TODOS}>
+    {({ loading, error, data }) => {
+      if (loading) return <p>Loading...</p>;
+      if (error) return <p>Error :(</p>;
 
-When fetching an item list, the response was normalized and each item was added to the cache. apollo generates a key ${object__typename}:${objectId} for each entity that has __typename and id. When the mutation is completed, we get the object with the same __typename and id, apollo finds it in cache and makes changes (components are re-rendered too).
+      return data.todos.map(({ id, type }) => {
+        let input;
+
+        return (
+          <Mutation mutation={UPDATE_TODO} key={id}>
+            {(updateTodo, { loading, error }) => (
+              <div>
+                <p>{type}</p>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    updateTodo({ variables: { id, type: input.value } });
+
+                    input.value = "";
+                  }}
+                >
+                  <input
+                    ref={node => {
+                      input = node;
+                    }}
+                  />
+                  <button type="submit">Update Todo</button>
+                </form>
+                {loading && <p>Loading...</p>}
+                {error && <p>Error :( Please try again</p>}
+              </div>
+            )}
+          </Mutation>
+        );
+      });
+    }}
+  </Query>
+ ```
+
+- Apollo generates a key `${object__typename}:${objectId}` for each entity that has `__typename` and `id` => finds it after mutation & makes changes/rerenders components. i.e. if only updating a single entity, no need for update!
+
+From: [Apollo Docs](https://deploy-preview-4650--apollo-client-docs.netlify.com/docs/react/essentials/mutations)
+
 ---
-
-## ActionCable
-
-GraphQL Subscription is a mechanism for delivering server-initiated updates to the client. Each update returns the data of a specific type: for instance, we could add a subscription to notify the client when a new item is added.
-The Query component from the `react-apollo` library provides the special function `subscribeToMore`:
+**Subscriptions**
+GraphQL Subscription = delivers server-initiated updates to the client. Each update returns the data of a specific type: e.g. notify that new item has been added
+The Query component from the `react-apollo` library provides the special function `subscribeToMore`
 Read More: https://www.apollographql.com/docs/react/advanced/subscriptions/
+
+Used with ActionCable, allows 'realtime' data refresh.
 
 ### React Component Folders:
 - javascript/components/Name/
@@ -237,7 +255,7 @@ rails generate rspec:install
 bundle add factory_bot_rails --version="~> 5.0" --group="development,test"
 ```
 
-add `config.include FactoryBot::Syntax::Methods` to `rails_helper.rb`
+Add `config.include FactoryBot::Syntax::Methods` to `rails_helper.rb`
 
 ```ruby
 # spec/factories.rb
