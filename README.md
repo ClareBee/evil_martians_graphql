@@ -79,9 +79,9 @@ end
 
 ___
 
-## Apollo
+## Apollo Client
 
-Read more: https://www.apollographql.com
+Read more: https://www.apollographql.com/docs/react/why-apollo/
 
 - declarative approach to data-fetching
 - single Query component encapsulates logic for retrieving data/loading/errors/updating UI
