@@ -10,6 +10,8 @@ README
 
 **Extended to include delete functionality**
 
+`rails s` opens app on `port 3000`
+
 ### Index view:
 ![library](app/assets/images/library.PNG)
 ___
