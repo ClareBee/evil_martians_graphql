@@ -10,7 +10,11 @@ README
 
 **Extended to include delete functionality**
 
+### Index view:
 ![library](app/assets/images/library.PNG)
+___
+
+### Edit form:
 ![edit](app/assets/images/edit.PNG)
 ___
 
