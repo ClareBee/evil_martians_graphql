@@ -10,6 +10,10 @@ README
 
 **Extended to include delete functionality**
 
+![library](app/assets/images/library.PNG)
+![edit](app/assets/images/edit.PNG)
+___
+
 *Note Apollo now uses `useQuery` and `useMutation` hooks*
 ___
 
