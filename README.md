@@ -206,11 +206,7 @@ const GET_TODOS = gql`
   }
 `;
 
-const AddTodo = () => {
-  let input;
-
-  return (
-    <Mutation
+ <Mutation
       mutation={ADD_TODO}
       update={(cache, { data: { addTodo } }) => {
         const { todos } = cache.readQuery({ query: GET_TODOS });
@@ -220,27 +216,17 @@ const AddTodo = () => {
         });
       }}
     >
-      {addTodo => (
-        <div>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              addTodo({ variables: { type: input.value } });
-              input.value = "";
-            }}
-          >
-            <input
-              ref={node => {
-                input = node;
-              }}
-            />
-            <button type="submit">Add Todo</button>
-          </form>
-        </div>
-      )}
-    </Mutation>
-  );
-};
+    [...]
+  ```
+
+**Update function**:
+- Apollo cache as 1st argument, mutation result as second (on data property)
+- Pass `ignoreResults` as a prop to disregard result.
+- `cache.readQuery` & `cache.writeQuery` allow you to read & write queries to the cache w GraphQL as if it were a server.
+- `optimisticResponse` = update function will be called twice: once with optimistic result, & again with actual result.
+- track state of mutation in UI w `loading`/`error`/`called` booleans.
+
+Example: (from Apollo docs)
 ```
 
 ### Note:
